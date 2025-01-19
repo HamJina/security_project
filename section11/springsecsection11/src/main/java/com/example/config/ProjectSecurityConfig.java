@@ -55,9 +55,9 @@ public class ProjectSecurityConfig {
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new JWTTokenGeneratorFIlter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new JWTTokenValidationFilter(), BasicAuthenticationFilter.class)
-                .sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(1).maxSessionsPreventsLogin(true))
+                .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
+              //  .sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(1).maxSessionsPreventsLogin(true))
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) //HTTP만 허용, HTTPS허용x
                 .authorizeHttpRequests((requests) -> {requests
                         /*.requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT") //단일 권한 부여

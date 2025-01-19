@@ -20,26 +20,33 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-//jwt토큰 유효성 검사 필터
-public class JWTTokenValidationFilter extends OncePerRequestFilter {
+public class JWTTokenValidatorFilter extends OncePerRequestFilter {
+    /**
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         String jwt = request.getHeader(ApplicationConstants.JWT_HEADER);
         if(null != jwt) {
             try {
                 Environment env = getEnvironment();
                 if (null != env) {
-                    String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY, //토큰생성때 사용한 동일한 secretkey로 유효성 검사
+                    String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY,
                             ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);
                     SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
                     if(null !=secretKey) {
-                        Claims claims = Jwts.parser().verifyWith(secretKey) //jwt토큰 검증하기
+                        Claims claims = Jwts.parser().verifyWith(secretKey)
                                 .build().parseSignedClaims(jwt).getPayload();
-                        String username = String.valueOf(claims.get("username")); //토큰에서 사용자 정보 가져오기
+                        String username = String.valueOf(claims.get("username"));
                         String authorities = String.valueOf(claims.get("authorities"));
-                        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, //사용자 정보를 토대로 인증객체 생성
+                        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null,
                                 AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
-                        SecurityContextHolder.getContext().setAuthentication(authentication); //SecurityContext에 저장
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 }
 
@@ -52,6 +59,7 @@ public class JWTTokenValidationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getServletPath().equals("/user"); // user외의 경로에 대해 이 filter가 실행됨
+        return request.getServletPath().equals("/user");
     }
+
 }
