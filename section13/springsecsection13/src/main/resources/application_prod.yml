@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: springsecsection13
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:mysql://${DATABASE_HOST:localhost}:${DATABASE_PORT:3306}/${DATABASE_NAME:eazybank}
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD:root}
+
+  jpa:
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: ${HIBERNATE_FORMAT_SQL:false}
+
+logging:
+  level:
+    org:
+      springframework:
+        security: ${SPRING_SECURITY_LOG_LEVEL:ERROR}
+  pattern:
+    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
+server:
+  servlet:
+    session:
+      timeout: ${SESSION_TIMEOUT:20m}
